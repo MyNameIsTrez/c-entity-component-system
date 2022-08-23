@@ -9,7 +9,9 @@ void foo(t_ecs *ecs)
 	{
 		player = ecs_get(&query, COMPONENT_PLAYER);
 		entity = ecs_get(&query, COMPONENT_ENTITY);
-		printf("%i, %i\n", player->dead, entity->tile.index);
+		assert(player->dead, true);
+		assert(entity->enabled, false);
+		// printf("%i, %i\n", player->dead, entity->enabled);
 	}
 }
 
@@ -29,7 +31,7 @@ int	main(void)
 
 	player_id_2 = ecs_new_entity();
 	ecs_add(player_id_2, COMPONENT_PLAYER, &(t_component_player){.dead=true}, ecs);
-	ecs_add(player_id_2, COMPONENT_ENTITY, &(t_component_entity){.enabled=true}, ecs);
+	ecs_add(player_id_2, COMPONENT_ENTITY, &(t_component_entity){.enabled=false}, ecs);
 
 	foo(&ecs);
 	return (EXIT_SUCCESS);
