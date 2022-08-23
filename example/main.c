@@ -11,7 +11,6 @@ void foo(t_ecs *ecs)
 		entity = ecs_get(&query, COMPONENT_ENTITY);
 		assert(player->dead, true);
 		assert(entity->enabled, false);
-		// printf("%i, %i\n", player->dead, entity->enabled);
 	}
 }
 
