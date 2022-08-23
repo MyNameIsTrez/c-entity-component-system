@@ -24,10 +24,10 @@ int	main(void)
 		sizeof(t_component_player),
 	}, ecs);
 
-	player_id_1 = ecs_create();
+	player_id_1 = ecs_new_entity();
 	ecs_add(player_id_1, COMPONENT_PLAYER, &(t_component_player){.dead=false}, ecs);
 
-	player_id_2 = ecs_create();
+	player_id_2 = ecs_new_entity();
 	ecs_add(player_id_2, COMPONENT_PLAYER, &(t_component_player){.dead=true}, ecs);
 	ecs_add(player_id_2, COMPONENT_ENTITY, &(t_component_entity){.enabled=true}, ecs);
 

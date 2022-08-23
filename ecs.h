@@ -11,7 +11,7 @@ void    ecs_declare(t_component_id component_id, size_t component_size, t_ecs *e
 
 // This function creates an entity and initializes the entity's mask to 0
 // Entity masks are necessary for knowing whether a component being 0 means that it has a value of 0, or that that entity doesn't have that component
-t_entity_id	ecs_create(void);
+t_entity_id	ecs_new_entity(void);
 
 // Under the hood this function will add both data and its entity_id right next to one another
 // Note that data isn't referring to the static data struct that most of my programs store their global state in!
