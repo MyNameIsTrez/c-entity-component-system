@@ -32,13 +32,13 @@ int	main(void)
 void foo(t_ecs *ecs)
 {
 	t_query	query; // Pointer to an array of components, and keeps an index for ecs_iterate()
-	int		x;
+	int		*x;
 
 	query = ecs_query((t_c){.x=1,.player=1}, ecs);
 	while (ecs_iterate(&query) != FINISHED) // Does i++
 	{
 		x = ecs_get((t_c){.x=1}, &query); // Does query[i].x
-		assert(x, 42); // Note how monster_id has .x=21, but isn't a player so won't be iterated
+		assert(*x, 42); // Note how monster_id has .x=21, but isn't a player so won't be iterated
 	}
 }
 
@@ -46,7 +46,7 @@ void foo(t_ecs *ecs)
 // The core idea is to duplicate component data for optimal iteration.
 // The first line is the combination of components and tags.
 // The second line is a contiguous array[] of combinations of components{}
-// The third line is what it looks like as bytes.
+// The third line is how it's stored as bytes.
 
 // x
 // [ {.x=21}, {.x=42} ]
