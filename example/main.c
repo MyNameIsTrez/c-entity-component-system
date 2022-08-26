@@ -1,20 +1,28 @@
+typedef struct	s_c
+{
+	size_t	x;
+	size_t	player;
+}	t_c;
+
 int	main(void)
 {
 	t_ecs		ecs;
 	t_entity_id	monster_id;
 	t_entity_id	player_id;
+	int			x;
 
 	ecs_init(&ecs);
 
-	ecs_declare(COMPONENT_POSITION, sizeof(t_component_position), &ecs);
-	ecs_declare(TAG_PLAYER, sizeof(t_tag_player), &ecs);
+	ecs_size((t_c){.x=sizeof(int)}, &ecs);
 
 	monster_id = ecs_entity();
-	ecs_add(monster_id, COMPONENT_POSITION, &(t_component_position){.age=21}, &ecs);
+	x = 21;
+	ecs_component(monster_id, (t_c){.x=1}, (int *)&x, &ecs); // sizeof(int) bytes from x are copied
 
 	player_id = ecs_entity();
-	ecs_add(player_id, COMPONENT_POSITION, &(t_component_position){.age=42}, &ecs);
-	ecs_add(player_id, TAG_PLAYER, &(t_tag_player){}, &ecs);
+	x = 42;
+	ecs_component(player_id, (t_c){.x=1}, (int *)&x, &ecs);
+	ecs_tag(player_id, (t_c){.player=1}, &ecs);
 
 	foo(&ecs);
 
@@ -23,31 +31,27 @@ int	main(void)
 
 void foo(t_ecs *ecs)
 {
-	t_query					query; // A pointer to a simple array
-	t_component_position	*position;
-	t_tag_player			*player;
+	t_query	query; // Pointer to an array of components, and keeps an index for ecs_iterate()
+	int		x;
 
-	query = ecs_query(COMPONENT_POSITION | TAG_PLAYER, ecs);
+	query = ecs_query((t_c){.x=1,.player=1}, ecs);
 	while (ecs_iterate(&query) != FINISHED) // Does i++
 	{
-		position = ecs_get(&query, COMPONENT_POSITION); // Does query[i].position
-		assert(position->age, 42); // Note how monster_id has .age=21, but isn't a player so won't be iterated
+		x = ecs_get((t_c){.x=1}, &query); // Does query[i].x
+		assert(x, 42); // Note how monster_id has .x=21, but isn't a player so won't be iterated
 	}
 }
 
-// This is the memory layout. The core idea is to duplicate component data for optimal iteration.
-// The first line is the combination of components, where | is the bitwise OR operator.
-// The second line is a contiguous array[], consisting of combinations of components{}
-// The third line is what it'd look like as raw bytes.
+// This is the memory layout.
+// The core idea is to duplicate component data for optimal iteration.
+// The first line is the combination of components and tags.
+// The second line is a contiguous array[] of combinations of components{}
+// The third line is what it looks like as bytes.
 
-// TAG_PLAYER
-// [ {.dead=true} ]
-// [1] - 1 bit in total
+// x
+// [ {.x=21}, {.x=42} ]
+// [21, 42] - x is 4 bytes, so 8 bytes in total
 
-// COMPONENT_POSITION
-// [ {.age=21}, {.age=42} ]
-// [21, 42] - if age is 4 bytes, 8 bytes in total
-
-// COMPONENT_POSITION | TAG_PLAYER
-// [ {.age=42} ]
-// [42] - if age is 4 bytes, 4 bytes in total
+// x + player
+// [ {.x=42} ]
+// [42] - x is 4 bytes, so 4 bytes in total
