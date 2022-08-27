@@ -1,5 +1,7 @@
-// Entity IDs allow associating components with one another
-typedef t_u64	t_entity_id;
+#ifndef ECS_H
+# define ECS_H
+
+# include "ecs_forward_declarations.h"
 
 void	ecs_init(t_ecs *ecs);
 
@@ -11,12 +13,6 @@ void	ecs_size(t_c sizes, t_ecs *ecs);
 t_entity_id	ecs_entity(void);
 
 void	ecs_component(t_entity_id entity_id, t_c added_component, void *value, t_ecs *ecs);
-
-typedef s_query
-{
-	t_u8	*data;
-    size_t	entity_index;
-}   t_query;
 
 t_query	ecs_query(t_c queried_components, t_ecs *ecs);
 
@@ -32,3 +28,5 @@ void	*ecs_get(t_c component, t_query *query);
 // int *x = ecs_get_2(player_id, (t_c){.x=1}, ecs);
 void	*ecs_get_2(t_entity_id entity_id, t_c component, t_ecs *ecs);
 */
+
+#endif

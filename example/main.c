@@ -1,3 +1,5 @@
+#include "ecs.h"
+
 typedef struct	s_c
 {
 	size_t	x;

@@ -1,3 +1,6 @@
+#include "ecs.h"
+#include "ecs_internal.h"
+
 void	ecs_init(t_ecs *ecs)
 {
 	bzero(ecs, sizeof(t_ecs));
