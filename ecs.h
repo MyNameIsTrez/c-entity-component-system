@@ -1,5 +1,5 @@
-// Entity IDs are necessary for associating components with one another
-typedef int64_t	t_entity_id;
+// Entity IDs allow associating components with one another
+typedef t_u64	t_entity_id;
 
 void	ecs_init(t_ecs *ecs);
 
@@ -18,7 +18,6 @@ typedef s_query
     size_t	entity_index;
 }   t_query;
 
-// t_query contains a pointer to the data and an entity index for ecs_iterate()
 t_query	ecs_query(t_c queried_components, t_ecs *ecs);
 
 // Increments query.entity_index for ecs_get()

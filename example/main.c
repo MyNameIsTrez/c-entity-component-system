@@ -38,7 +38,7 @@ void foo(t_ecs *ecs)
 	while (ecs_iterate(&query) != FINISHED) // Does i++
 	{
 		x = ecs_get((t_c){.x=1}, &query); // Does query[i].x
-		assert(*x, 42); // Note how monster_id has .x=21, but isn't a player so won't be iterated
+		assert(*x, 42); // Note how monster_id has an x of 21, but isn't a player so won't be iterated
 	}
 }
 
