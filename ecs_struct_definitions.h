@@ -1,8 +1,9 @@
-#ifndef ECS_INTERNAL_H
-# define ECS_INTERNAL_H
+#ifndef ECS_STRUCT_DEFINITIONS_H
+# define ECS_STRUCT_DEFINITIONS_H
 
 typedef s_ecs
 {
+	t_c	*c;
 }	t_ecs;
 
 typedef s_query
