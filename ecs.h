@@ -16,7 +16,7 @@ void	ecs_component(t_entity_id entity_id, t_c *added_component, void *value, t_e
 
 void	ecs_tag(t_entity_id entity_id, t_c *added_tags, t_ecs *ecs);
 
-t_query	ecs_query(t_c *queried_components, t_ecs *ecs);
+t_query	ecs_query(t_c *components, t_g *tags, t_ecs *ecs);
 
 // Increments query.entity_index for ecs_get()
 t_status	ecs_iterate(t_query *query);

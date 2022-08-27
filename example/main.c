@@ -2,9 +2,13 @@
 
 typedef struct	s_c
 {
-	size_t	x;
 	size_t	player;
-}	t_c; // The fields are components and tags
+}	t_c; // The fields are components
+
+typedef struct	s_g
+{
+	bool	player;
+}	t_g; // The fields are tags
 
 int	main(void)
 {
@@ -24,7 +28,7 @@ int	main(void)
 	player_id = ecs_entity(&ecs);
 	x = 42;
 	ecs_component(player_id, (t_c *)&{.x=1}, (int *)&x, &ecs);
-	ecs_tag(player_id, (t_c *)&{.player=1}, &ecs);
+	ecs_tag(player_id, (t_g *)&{.player=1}, &ecs);
 
 	foo(&ecs);
 
@@ -36,11 +40,11 @@ void foo(t_ecs *ecs)
 	t_query	query; // Pointer to an array of components, and keeps an index for ecs_iterate()
 	int		*x;
 
-	query = ecs_query((t_c *)&{.x=1,.player=1}, ecs);
+	query = ecs_query((t_c *)&{.x=1}, (t_g *)&{.player=1}, ecs);
 	while (ecs_iterate(&query) != FINISHED) // Does i++
 	{
 		x = ecs_get((t_c *)&{.x=1}, &query); // Does query[i].x
-		assert(*x, 42); // Note how monster_id has an x of 21, but isn't a player so won't be iterated
+		assert(*x, 42); // Note how monster_id has an x of 21, but doesn't have the player tag so won't be iterated
 	}
 }
 
