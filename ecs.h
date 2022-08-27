@@ -29,6 +29,10 @@ void	*ecs_get(t_c *component, t_query *query);
 // Example:
 // int *x = ecs_get_2(player_id, (t_c *)&{.x=1}, ecs);
 void	*ecs_get_2(t_entity_id entity_id, t_c *component, t_ecs *ecs);
+
+void	ecs_remove(t_entity_id entity_id, t_c *component, t_ecs *ecs);
+
+void	ecs_destroy(t_entity_id entity_id, t_ecs *ecs);
 */
 
 #endif

@@ -7,6 +7,7 @@ typedef s_ecs
 	size_t	entity_count;
 }	t_ecs;
 
+// TODO: Typedef to t_iterator?
 typedef s_query
 {
 	t_u8	*data;

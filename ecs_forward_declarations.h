@@ -4,7 +4,7 @@
 // typedef s_ecs	t_ecs;
 
 // Entity IDs allow associating components with one another
-typedef size_t	t_entity_id;
+typedef t_u32	t_entity_id;
 
 typedef s_query	t_query;
 
