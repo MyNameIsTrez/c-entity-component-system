@@ -21,3 +21,9 @@ void    ecs_size(t_c *sizes, t_ecs *ecs)
         field_index++;
     }
 }
+
+t_entity_id	ecs_entity(t_ecs *ecs)
+{
+	// TODO: Let ecs contain a vector of entity IDs that have been removed and let this function use those first before incrementing ecs.entity_count
+	return (ecs->entity_count++);
+}

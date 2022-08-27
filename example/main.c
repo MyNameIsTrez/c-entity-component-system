@@ -17,11 +17,11 @@ int	main(void)
 
 	ecs_size((t_c *)&{.x=sizeof(int)}, &ecs);
 
-	monster_id = ecs_entity();
+	monster_id = ecs_entity(&ecs);
 	x = 21;
 	ecs_component(monster_id, (t_c *)&{.x=1}, (int *)&x, &ecs); // sizeof(int) bytes from x are copied
 
-	player_id = ecs_entity();
+	player_id = ecs_entity(&ecs);
 	x = 42;
 	ecs_component(player_id, (t_c *)&{.x=1}, (int *)&x, &ecs);
 	ecs_tag(player_id, (t_c *)&{.player=1}, &ecs);

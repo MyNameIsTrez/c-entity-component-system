@@ -4,6 +4,7 @@
 typedef s_ecs
 {
 	t_c	*c;
+	size_t	entity_count;
 }	t_ecs;
 
 typedef s_query
