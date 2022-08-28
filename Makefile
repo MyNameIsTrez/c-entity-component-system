@@ -13,9 +13,6 @@ CFLAGS := -Wall -Wextra -Werror -Wconversion -Wpedantic -Wfatal-errors
 
 LIBFT_PATH := ../libft
 LIBFT_LIB_PATH := $(LIBFT_PATH)/libft.a
-LIBFT := -L$(LIBFT_PATH) -lft
-
-LIBS := $(LIBFT) -L. -lecs
 
 INCLUDES_HEADERS += $(LIBFT_PATH)/libft.h ./ecs.h
 
@@ -75,7 +72,7 @@ all: $(PRE_RULES) $(NAME)
 ################################################################################
 
 $(LIBFT_LIB_PATH):
-	@$(MAKE) -C $(dir $(LIBFT_PATH))
+	@$(MAKE) -C $(LIBFT_PATH)
 
 ################################################################################
 
@@ -99,14 +96,24 @@ clean:
 
 .PHONY: fclean
 fclean: clean
-	@$(MAKE) -C $(dir $(LIBFT)) fclean
+	@$(MAKE) -C $(LIBFT_PATH) fclean
 	rm -f $(FCLEANED_FILES)
 
 .PHONY: re
 re: fclean all
 
+################################################################################
+
+LIBFT := -L$(LIBFT_PATH) -lft
+ECS := -L. -lecs
+
+LIBS := $(ECS) $(LIBFT)
+
 .PHONY: example
-example: all
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) ./example/main.c -o ./example.out
+example: all $(OBJ_DIR)/example.o
+	$(CC) $(CFLAGS) $(OBJ_DIR)/example.o $(LIBS) -o ./example.out
+
+$(OBJ_DIR)/%.o: example/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 ################################################################################
