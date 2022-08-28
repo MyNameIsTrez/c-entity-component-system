@@ -16,20 +16,17 @@ typedef struct	s_g
 int	main(void)
 {
 	t_ecs		*ecs;
-	// t_entity_id	monster_id;
+	t_entity_id	monster_id;
 	// t_entity_id	player_id;
-	// int			x;
+	int			x;
 
-	ecs = ecs_init();
-	(void)ecs;
+	ecs = ecs_init(sizeof(t_c), sizeof(t_g));
 
-	ft_print("foo");
+	ecs_size(&(t_c){.x=sizeof(int)}, ecs);
 
-	// ecs_size(&(t_c){.x=sizeof(int)}, sizeof(t_c), ecs);
-
-	// monster_id = ecs_entity(ecs);
-	// x = 21;
-	// ecs_component(monster_id, &(t_c){.x=1}, (int *)&x, ecs); // sizeof(int) bytes from x are copied
+	monster_id = ecs_entity(ecs);
+	x = 21;
+	ecs_component(monster_id, &(t_c){.x=1}, (int *)&x, ecs); // sizeof(int) bytes from x are copied
 
 	// player_id = ecs_entity(ecs);
 	// x = 42;

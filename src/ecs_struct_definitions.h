@@ -9,10 +9,14 @@ typedef	struct s_archetype
 
 typedef struct s_ecs
 {
+	size_t		t_c_size;
+	size_t		t_c_count;
+	size_t		t_g_size;
 	t_c			*component_sizes;
-	t_entity_id	highest_entity_id;
-	t_archetype	*entity_id_archetypes; // vector that maps index entity_id 5 -> value archetype 3 for when components are added to/removed from an entity
+	t_entity_id	next_highest_entity_id;
+	t_archetype	**entity_id_archetype_pairs;
 	t_archetype	*archetypes; // Is a Set data type
+	t_archetype	*new_entity_archetype;
 	void		**archetypes_data; // A vector where each index corresponds with an index in the archetypes field, and the value is a pointer to archetype data
 }	t_ecs;
 

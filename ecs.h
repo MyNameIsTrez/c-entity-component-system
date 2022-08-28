@@ -4,10 +4,10 @@
 # include "libft.h"
 # include "src/ecs_forward_declarations.h"
 
-t_ecs   *ecs_init(void);
+t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size);
 
 // Declares what the sizes of components and the size of t_c are
-void	ecs_size(t_c *sizes, size_t t_c_size, t_ecs *ecs);
+void	ecs_size(t_c *sizes, t_ecs *ecs);
 
 // Creates an entity
 t_entity_id	ecs_entity(t_ecs *ecs);
