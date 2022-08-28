@@ -6,7 +6,6 @@
 void	ecs_init(t_ecs *ecs);
 
 // Declares what the sizes of components are
-// This function can be called multiple times
 void	ecs_size(t_c *sizes, t_ecs *ecs);
 
 // Creates an entity

@@ -2,13 +2,13 @@
 
 typedef struct	s_c
 {
-	size_t	player;
-}	t_c; // The fields are components
+	size_t	x;
+}	t_c; // Components
 
 typedef struct	s_g
 {
 	bool	player;
-}	t_g; // The fields are tags
+}	t_g; // Tags (_t is reserved)
 
 int	main(void)
 {
