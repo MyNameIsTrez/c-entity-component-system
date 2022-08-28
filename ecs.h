@@ -1,12 +1,13 @@
 #ifndef ECS_H
 # define ECS_H
 
-# include "ecs_forward_declarations.h"
+# include "libft.h"
+# include "src/ecs_forward_declarations.h"
 
-void	ecs_init(t_ecs *ecs);
+t_ecs   *ecs_init(void);
 
-// Declares what the sizes of components are
-void	ecs_size(t_c *sizes, t_ecs *ecs);
+// Declares what the sizes of components and the size of t_c are
+void	ecs_size(t_c *sizes, size_t t_c_size, t_ecs *ecs);
 
 // Creates an entity
 t_entity_id	ecs_entity(t_ecs *ecs);
@@ -15,10 +16,10 @@ void	ecs_component(t_entity_id entity_id, t_c *added_component, void *value, t_e
 
 void	ecs_tag(t_entity_id entity_id, t_g *added_tags, t_ecs *ecs);
 
-t_query	ecs_query(t_c *components, t_g *tags, t_ecs *ecs);
+t_query	*ecs_query(t_c *components, t_g *tags, t_ecs *ecs);
 
 // Increments query.entity_index for ecs_get()
-t_status	ecs_iterate(t_query *query);
+t_iterator_status	ecs_iterate(t_query *query);
 
 // Returns a pointer to data + query.entity_index * block_size + component offset
 void	*ecs_get(t_c *component, t_query *query);
