@@ -9,7 +9,7 @@
 
 typedef struct s_ecs		t_ecs;
 // Entity IDs allow associating components with one another
-typedef uint32_t			t_entity_id;
+typedef size_t				t_entity_id;
 typedef struct s_iterator	t_iterator;
 typedef struct s_c			t_c;
 typedef struct s_g			t_g;
@@ -67,18 +67,18 @@ struct s_ecs
 	size_t		t_c_count;
 	size_t		t_g_size;
 	t_c			*component_sizes;
-	t_entity_id	next_highest_entity_id;
 
 	// t_archetype **
 	t_vector	*entity_id_archetype_pairs;
 
-	// t_archetype *, is a Set.
+	// t_archetype *. A Set of archetypes.
 	t_vector	*archetypes;
 
+	// A reused temporary archetype variable.
 	t_archetype	*new_entity_archetype;
 
-	// A vector where each index corresponds with an index
-	// in the archetypes field, and the value is a pointer to archetype data.
+	// A vector of which each index corresponds with an index in archetypes,
+	// and the value is a pointer to archetype data.
 	void		**archetypes_data;
 };
 
@@ -131,7 +131,7 @@ t_entity_id	ecs_entity(t_ecs *ecs)
 	empty_archetype = vector_get(ecs->archetypes, 0);
 	archetype_ptr = vector_grow(ecs->entity_id_archetype_pairs);
 	*archetype_ptr = empty_archetype;
-	return ecs->next_highest_entity_id++;
+	return vector_size(ecs->entity_id_archetype_pairs) - 1;
 }
 
 static void	_update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)

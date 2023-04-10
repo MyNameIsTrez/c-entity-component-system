@@ -31,7 +31,6 @@ int	main(void)
 	int			x;
 
 	ecs = ecs_init(sizeof(t_c), sizeof(t_g));
-	(void)ecs;
 
 	ecs_size(ecs, &(t_c){.x=sizeof(int)});
 
@@ -54,7 +53,7 @@ int	main(void)
 
 // void	foo(t_ecs *ecs)
 // {
-	// Pointer to an array of components, and keeps an index for ecs_iterate()
+	// iterator contains a pointer to an array of components, and has an iteration index for ecs_iterate()
 // 	t_iterator	*iterator;
 // 	int		*x;
 
@@ -64,7 +63,7 @@ int	main(void)
 // 	{
 		// Does iterator[i].x
 // 		x = ecs_get(&(t_c){.x=1}, iterator);
-		// Note how monster_id has an x of 21, but doesn't have the player tag so won't be iterated
+		// monster_id has an x that is 21, but doesn't have the player tag so won't be iterated
 // 		assert(*x == 42);
 // 	}
 // }
