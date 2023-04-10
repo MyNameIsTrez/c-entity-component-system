@@ -124,11 +124,11 @@ void    ecs_size(t_ecs *ecs, t_c *sizes)
 
 t_entity_id	ecs_entity(t_ecs *ecs)
 {
-	// t_archetype *empty_archetype;
+	t_archetype *empty_archetype;
 
-	// empty_archetype = vector_get(ecs->archetypes, 0);
+	empty_archetype = vector_get(ecs->archetypes, 0);
 	vector_grow(ecs->entity_id_archetype_pairs);
-	// TODO: put empty_archetype in new spot?
+	*((t_archetype **)vector_get(ecs->entity_id_archetype_pairs, ecs->next_highest_entity_id)) = empty_archetype;
 	return (ecs->next_highest_entity_id++);
 }
 
@@ -156,11 +156,11 @@ void	ecs_component(t_ecs *ecs, t_entity_id entity_id, t_c *added_component, void
 {
 	t_archetype	*old_entity_archetype;
 
-	old_entity_archetype = vector_get(ecs->entity_id_archetype_pairs, entity_id);
+	old_entity_archetype = *(t_archetype **)vector_get(ecs->entity_id_archetype_pairs, entity_id);
+	// _update_new_entity_archetype(old_entity_archetype, added_component, ecs);
 	(void)old_entity_archetype;
 	(void)added_component;
 	(void)value;
-	// _update_new_entity_archetype(old_entity_archetype, added_component, ecs);
 
 	// Checks whether new_entity_archetype.c and .g are already in ecs.archetypes
 	// if (ecs->new_entity_archetype in ecs->archetypes)
