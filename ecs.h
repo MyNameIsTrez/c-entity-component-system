@@ -132,44 +132,46 @@ t_entity_id	ecs_entity(t_ecs *ecs)
 	return (ecs->next_highest_entity_id++);
 }
 
-// static void	_update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)
-// {
-// 	size_t  field_index;
-// 	size_t  field_value;
+static void	_update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)
+{
+	size_t  field_index;
 
-// 	memcpy(ecs->new_entity_archetype->c, old_entity_archetype->c, ecs->t_c_size);
-// 	memcpy(ecs->new_entity_archetype->g, old_entity_archetype->g, ecs->t_c_size);
+	memcpy(ecs->new_entity_archetype->c, old_entity_archetype->c, ecs->t_c_size);
+	memcpy(ecs->new_entity_archetype->g, old_entity_archetype->g, ecs->t_g_size);
 
-// 	field_index = 0;
-// 	while (field_index < ecs->t_c_count)
-// 	{
-// 		field_value = ((size_t *)added_component)[field_index];
-// 		if (field_value == 1)
-// 		{
-// 			((size_t *)ecs->new_entity_archetype->c)[field_index] = field_value;
-// 		}
-// 		field_index++;
-// 	}
-// }
+	field_index = 0;
+	while (field_index < ecs->t_c_count)
+	{
+		if (((size_t *)added_component)[field_index] == 1)
+		{
+			((size_t *)ecs->new_entity_archetype->c)[field_index] = 1;
+		}
+		field_index++;
+	}
+}
 
 void	ecs_component(t_ecs *ecs, t_entity_id entity_id, t_c *added_component, void *value)
 {
 	t_archetype	*old_entity_archetype;
 
 	old_entity_archetype = *(t_archetype **)vector_get(ecs->entity_id_archetype_pairs, entity_id);
-	// _update_new_entity_archetype(old_entity_archetype, added_component, ecs);
+	_update_new_entity_archetype(old_entity_archetype, added_component, ecs);
 	(void)old_entity_archetype;
 	(void)added_component;
 	(void)value;
 
 	// Checks whether new_entity_archetype.c and .g are already in ecs.archetypes
 	// if (ecs->new_entity_archetype in ecs->archetypes)
-	// 	ecs->entity_id_archetype_pairs[entity_id] = archetype
+	// {
+	// 	ecs->entity_id_archetype_pairs[entity_id] = existing_archetype
+	// }
 	// else
+	// {
 	// 	new_archetype = calloc();
 	// 	ft_memcpy(new_archetype, ecs->new_entity_archetype, );
-	// 	ecs->archetypes vector_push_back() new_archetype
+	// 	ecs->archetypes vector_push() new_archetype
 	// 	ecs->entity_id_archetype_pairs[entity_id] = new_archetype
+	// }
 }
 
 void	ecs_cleanup(t_ecs *ecs)
