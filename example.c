@@ -1,6 +1,8 @@
 #include "ecs.h"
 #include "assert.h"
 
+#include <stdlib.h>
+
 typedef struct	s_c
 {
 	size_t	x;
@@ -15,25 +17,25 @@ typedef struct	s_g
 
 int	main(void)
 {
-	t_ecs		*ecs;
-	t_entity_id	monster_id;
-	// t_entity_id	player_id;
-	int			x;
+	// t_ecs		*ecs;
+	// t_entity_id	monster_id;
+	// // t_entity_id	player_id;
+	// int			x;
 
-	ecs = ecs_init(sizeof(t_c), sizeof(t_g));
+	// ecs = ecs_init(sizeof(t_c), sizeof(t_g));
 
-	ecs_size(&(t_c){.x=sizeof(int)}, ecs);
+	// ecs_size(&(t_c){.x=sizeof(int)}, ecs);
 
-	monster_id = ecs_entity(ecs);
-	x = 21;
-	ecs_component(monster_id, &(t_c){.x=1}, (int *)&x, ecs); // sizeof(int) bytes from x are copied
+	// monster_id = ecs_entity(ecs);
+	// x = 21;
+	// ecs_component(monster_id, &(t_c){.x=1}, (int *)&x, ecs); // sizeof(int) bytes from x are copied
 
-	// player_id = ecs_entity(ecs);
-	// x = 42;
-	// ecs_component(player_id, &(t_c){.x=1}, (int *)&x, ecs);
-	// ecs_tag(player_id, &(t_g){.player=1}, ecs);
+	// // player_id = ecs_entity(ecs);
+	// // x = 42;
+	// // ecs_component(player_id, &(t_c){.x=1}, (int *)&x, ecs);
+	// // ecs_tag(player_id, &(t_g){.player=1}, ecs);
 
-	// foo(ecs);
+	// // foo(ecs);
 
 	return (EXIT_SUCCESS);
 }
@@ -44,7 +46,7 @@ int	main(void)
 // 	int		*x;
 
 // 	query = ecs_query(&(t_c){.x=1}, &(t_g){.player=1}, ecs);
-// 	while (ecs_iterate(query) != FINISHED) // Does i++
+// 	while (ecs_iterate(query)) // Does i++
 // 	{
 // 		x = ecs_get(&(t_c){.x=1}, query); // Does query[i].x
 // 		assert(*x == 42); // Note how monster_id has an x of 21, but doesn't have the player tag so won't be iterated

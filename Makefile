@@ -1,7 +1,3 @@
-# TODO: Paste 42 header here
-
-################################################################################
-
 NAME := libecs.a
 
 CC := cc
@@ -11,84 +7,40 @@ OBJ_DIR := ./obj
 
 CFLAGS := -Wall -Wextra -Werror -Wconversion -Wpedantic -Wfatal-errors
 
-LIBFT_PATH := ../libft
-LIBFT_LIB_PATH := $(LIBFT_PATH)/libft.a
-
-INCLUDES_HEADERS += $(LIBFT_PATH)/libft.h ./ecs.h
+INCLUDES := -I./src
 
 ################################################################################
 
-# TODO: Replace with hardcoded sources before handing in
 SOURCES += $(shell find ./src -type f -name "*.c")
+OBJECT_PATHS := $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(SOURCES:.c=.o))
 
 ################################################################################
 
-# TODO: Replace with hardcoded headers before handing in
-HEADERS += $(shell find ./src -type f -name "*.h")
-
-################################################################################
-
-FCLEANED_FILES := $(NAME)
-
-################################################################################
-
-# DEBUG is set to 1 when libctester includes this file
 ifdef DEBUG
-CFLAGS += -DDEBUG=1
-CFLAGS += -DSTATIC=
 CFLAGS += -g3
 endif
-
 ifdef SAN
 CFLAGS += -fsanitize=address
 endif
-
 ifdef O3
 CFLAGS += -O3
 endif
 
 ################################################################################
 
-OBJECT_PATHS := $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(SOURCES:.c=.o))
-
-HEADERS += $(INCLUDES_HEADERS)
-
-# sort removes duplicates
-INCLUDES := $(addprefix -I, $(sort $(dir $(INCLUDES_HEADERS))))
-
-# Only cleans when MAKE_DATA changes.
-DATA_FILE := .make_data
-MAKE_DATA := $(CFLAGS) $(SOURCES)
-PRE_RULES :=
-ifneq ($(shell echo "$(MAKE_DATA)"), $(shell cat "$(DATA_FILE)" 2> /dev/null))
-PRE_RULES += clean
-endif
-
-################################################################################
-
 .PHONY: all
-all: $(PRE_RULES) $(NAME)
+all: $(NAME)
 
 ################################################################################
 
-$(LIBFT_LIB_PATH):
-	@$(MAKE) -C $(LIBFT_PATH)
-
-################################################################################
-
-$(NAME): $(LIBFT_LIB_PATH) $(OBJECT_PATHS)
+$(NAME): $(OBJECT_PATHS)
 	ar rcs $(NAME) $(OBJECT_PATHS)
-	@echo "$(MAKE_DATA)" > $(DATA_FILE)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 ################################################################################
-
-.PHONY: debug
-debug:
-	@$(MAKE) DEBUG=1 all
 
 .PHONY: clean
 clean:
@@ -96,24 +48,17 @@ clean:
 
 .PHONY: fclean
 fclean: clean
-	@$(MAKE) -C $(LIBFT_PATH) fclean
-	rm -f $(FCLEANED_FILES)
+	rm -f $(NAME)
 
 .PHONY: re
 re: fclean all
 
 ################################################################################
 
-LIBFT := -L$(LIBFT_PATH) -lft
-ECS := -L. -lecs
-
-LIBS := $(ECS) $(LIBFT)
+LIBS := -L. -lecs
 
 .PHONY: example
-example: all $(OBJ_DIR)/example.o
-	$(CC) $(CFLAGS) $(OBJ_DIR)/example.o $(LIBS) -o ./example.out
-
-$(OBJ_DIR)/%.o: example/%.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-
-################################################################################
+example: all
+	$(CC) $(CFLAGS) $(INCLUDES) -c example.c -o obj/example.o
+	$(CC) $(CFLAGS) $(LIBS) $(OBJECT_PATHS) $(OBJ_DIR)/example.o -o ./example
+	./example

@@ -23,7 +23,7 @@ typedef struct s_ecs
 // TODO: Typedef to t_iterator?
 typedef struct s_query
 {
-	t_u8	*data;
+	uint8_t	*data;
 	size_t	entity_index;
 }	t_query;
 

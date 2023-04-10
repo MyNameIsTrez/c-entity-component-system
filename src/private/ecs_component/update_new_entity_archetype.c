@@ -1,13 +1,15 @@
 #include "ecs.h"
-#include "src/ecs_struct_definitions.h"
+#include "ecs_struct_definitions.h"
+
+#include <string.h>
 
 void	update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)
 {
 	size_t  field_index;
 	size_t  field_value;
 
-	ft_memcpy(ecs->new_entity_archetype->c, old_entity_archetype->c, ecs->t_c_size);
-	ft_memcpy(ecs->new_entity_archetype->g, old_entity_archetype->g, ecs->t_c_size);
+	memcpy(ecs->new_entity_archetype->c, old_entity_archetype->c, ecs->t_c_size);
+	memcpy(ecs->new_entity_archetype->g, old_entity_archetype->g, ecs->t_c_size);
 
 	field_index = 0;
 	while (field_index < ecs->t_c_count)

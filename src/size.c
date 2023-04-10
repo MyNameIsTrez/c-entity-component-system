@@ -1,5 +1,5 @@
 #include "ecs.h"
-#include "src/ecs_struct_definitions.h"
+#include "ecs_struct_definitions.h"
 
 void    ecs_size(t_c *sizes, t_ecs *ecs)
 {
