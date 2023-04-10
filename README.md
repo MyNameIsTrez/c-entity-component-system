@@ -2,13 +2,38 @@
 
 This is a simple and efficient C implementation of an Entity Component System.
 
-## Running the example
+## The example
 
-Clone this repository and execute `make example`.
+Clone this repository and execute `make example` to run it.
 
-Read example.c to get an idea of how ecs.h should be used.
+Read example.c to get a feel for how ecs.h should be used.
 
-## How does it work
+### How the example works
+This is the memory layout. The core idea is to duplicate component data for optimal iteration.
+
+The first line has the component names.
+
+The second line has the tag names.
+
+The third line is a contiguous array[] of the components{}.
+
+The fourth line is how it's stored as bytes.
+
+```json
+x
+
+[ {.x=21}, {.x=42} ]
+[ 21, 42 ] - x is 4 bytes, so 8 bytes in total
+```
+
+```json
+x
+player
+[ {.x=42} ]
+[ 42 ] - x is 4 bytes, so 4 bytes in total
+```
+
+## How the ECS works
 
 See [Dylan Falconer's ECS YouTube video](https://www.youtube.com/watch?v=s6TMa33niJo) for an excellent explanation of roughly the same API. The main difference is that his implementation uses an Array of Structs, while mine uses a Struct of Arrays. This made my implementation slightly harder to implement, but also much more efficient.
 

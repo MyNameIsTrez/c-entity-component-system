@@ -63,17 +63,3 @@ int	main(void)
 // 		assert(*x == 42);
 // 	}
 // }
-
-// This is the memory layout.
-// The core idea is to duplicate component data for optimal iteration.
-// The first line is the combination of components and tags.
-// The second line is a contiguous array[] of combinations of components{}.
-// The third line is how it's stored as bytes.
-
-// x
-// [ {.x=21}, {.x=42} ]
-// [ 21, 42 ] - x is 4 bytes, so 8 bytes in total
-
-// x + player
-// [ {.x=42} ]
-// [ 42 ] - x is 4 bytes, so 4 bytes in total
