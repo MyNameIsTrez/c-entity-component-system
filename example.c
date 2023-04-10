@@ -5,12 +5,16 @@
 #include <stdlib.h>
 
 // Components
+// The sizes of components in bytes are stored here.
+// x is an int and sizeof(int) == 32, so this s_c.x size_t will hold 32.
 struct	s_c
 {
 	size_t	x;
 };
 
 // Tags (_t is reserved, so can't be s_t)
+// Tags are effectively components without a value.
+// Useful when you just want to differentiate say a player from a monster.
 struct	s_g
 {
 	bool	player;
