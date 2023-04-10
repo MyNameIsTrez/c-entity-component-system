@@ -6,6 +6,8 @@ This is a simple and efficient C implementation of an Entity Component System.
 
 Clone this repository and execute `make example`.
 
+Read example.c to get an idea of how ecs.h should be used.
+
 ## How does it work
 
 See [Dylan Falconer's ECS YouTube video](https://www.youtube.com/watch?v=s6TMa33niJo) for an excellent explanation of roughly the same API. The main difference is that his implementation uses an Array of Structs, while mine uses a Struct of Arrays. This made my implementation slightly harder to implement, but also much more efficient.
