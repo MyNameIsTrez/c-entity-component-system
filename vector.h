@@ -7,7 +7,7 @@
 typedef struct s_vector	t_vector;
 
 t_vector	*vector_new(size_t element_size);
-void		vector_grow(t_vector *vector);
+void		*vector_grow(t_vector *vector);
 void		*vector_get(t_vector *vector, size_t index);
 size_t		vector_size(t_vector *vector);
 void		vector_free(t_vector *vector);
@@ -34,7 +34,7 @@ t_vector	*vector_new(size_t element_size)
 	return vector;
 }
 
-void	vector_grow(t_vector *vector)
+void	*vector_grow(t_vector *vector)
 {
 	size_t	new_element_capacity;
 	uint8_t	*new_address;
@@ -59,6 +59,7 @@ void	vector_grow(t_vector *vector)
 		vector->capacity = new_element_capacity;
 	}
 	vector->size++;
+	return &vector->address[(vector->size - 1) * vector->element_size];
 }
 
 void	*vector_get(t_vector *vector, size_t index)

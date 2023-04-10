@@ -68,12 +68,17 @@ struct s_ecs
 	size_t		t_g_size;
 	t_c			*component_sizes;
 	t_entity_id	next_highest_entity_id;
+
 	// t_archetype **
 	t_vector	*entity_id_archetype_pairs;
-	// t_archetype	*, is a Set
+
+	// t_archetype *, is a Set.
 	t_vector	*archetypes;
+
 	t_archetype	*new_entity_archetype;
-	// A vector where each index corresponds with an index in the archetypes field, and the value is a pointer to archetype data
+
+	// A vector where each index corresponds with an index
+	// in the archetypes field, and the value is a pointer to archetype data.
 	void		**archetypes_data;
 };
 
@@ -98,8 +103,7 @@ t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 	ecs->entity_id_archetype_pairs = vector_new(sizeof(t_archetype *));
 
 	ecs->archetypes = vector_new(sizeof(t_archetype));
-	vector_grow(ecs->archetypes);
-	archetype = vector_get(ecs->archetypes, 0);
+	archetype = vector_grow(ecs->archetypes);
 	archetype->c = calloc(1, t_c_size);
 	archetype->g = calloc(1, t_g_size);
 
@@ -130,8 +134,7 @@ t_entity_id	ecs_entity(t_ecs *ecs)
 	t_archetype	**archetype_ptr;
 
 	empty_archetype = vector_get(ecs->archetypes, 0);
-	vector_grow(ecs->entity_id_archetype_pairs);
-	archetype_ptr = vector_get(ecs->entity_id_archetype_pairs, ecs->next_highest_entity_id);
+	archetype_ptr = vector_grow(ecs->entity_id_archetype_pairs);
 	*archetype_ptr = empty_archetype;
 	return ecs->next_highest_entity_id++;
 }
