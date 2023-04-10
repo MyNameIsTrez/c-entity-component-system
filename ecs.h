@@ -57,8 +57,8 @@ void	ecs_destroy(t_entity_id entity_id, t_ecs *ecs);
 
 typedef	struct s_archetype
 {
-	t_c	*c;
-	t_g	*g;
+	t_c	c;
+	t_g	g;
 }	t_archetype;
 
 struct s_ecs
@@ -91,7 +91,6 @@ struct s_iterator
 t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 {
 	t_ecs   	*ecs;
-	t_archetype	*archetype;
 
 	ecs = calloc(1, sizeof(t_ecs));
 
@@ -103,13 +102,9 @@ t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 	ecs->entity_id_archetype_pairs = vector_new(sizeof(t_archetype *));
 
 	ecs->archetypes = vector_new(sizeof(t_archetype));
-	archetype = vector_grow(ecs->archetypes);
-	archetype->c = calloc(1, t_c_size);
-	archetype->g = calloc(1, t_g_size);
+	vector_grow(ecs->archetypes);
 
     ecs->new_entity_archetype = calloc(1, sizeof(t_archetype));
-    ecs->new_entity_archetype->c = calloc(1, ecs->t_c_size);
-	ecs->new_entity_archetype->g = calloc(1, ecs->t_g_size);
 
 	return ecs;
 }
@@ -143,28 +138,28 @@ static void	_update_new_entity_archetype(t_archetype *old_entity_archetype, t_c 
 {
 	size_t  field_index;
 
-	memcpy(ecs->new_entity_archetype->c, old_entity_archetype->c, ecs->t_c_size);
-	memcpy(ecs->new_entity_archetype->g, old_entity_archetype->g, ecs->t_g_size);
+	ecs->new_entity_archetype->c = old_entity_archetype->c;
+	ecs->new_entity_archetype->g = old_entity_archetype->g;
 
 	field_index = 0;
 	while (field_index < ecs->t_c_count)
 	{
 		if (((size_t *)added_component)[field_index] == 1)
 		{
-			((size_t *)ecs->new_entity_archetype->c)[field_index] = 1;
+			((size_t *)&ecs->new_entity_archetype->c)[field_index] = 1;
 		}
 		field_index++;
 	}
 }
 
-static bool	_c_identical(t_c *c, t_c *new_c, size_t t_c_size)
+static bool	_c_identical(t_c c, t_c new_c, size_t t_c_size)
 {
 	size_t		index;
 
 	index = 0;
 	while (index < t_c_size)
 	{
-		if (((size_t *)c)[index] != ((size_t *)new_c)[index])
+		if (((size_t *)&c)[index] != ((size_t *)&new_c)[index])
 		{
 			return false;
 		}
@@ -173,14 +168,14 @@ static bool	_c_identical(t_c *c, t_c *new_c, size_t t_c_size)
 	return true;
 }
 
-static bool	_g_identical(t_g *g, t_g *new_g, size_t t_g_size)
+static bool	_g_identical(t_g g, t_g new_g, size_t t_g_size)
 {
 	size_t		index;
 
 	index = 0;
 	while (index < t_g_size)
 	{
-		if (((bool *)g)[index] != ((bool *)new_g)[index])
+		if (((bool *)&g)[index] != ((bool *)&new_g)[index])
 		{
 			return false;
 		}
@@ -212,20 +207,23 @@ void	ecs_component(t_ecs *ecs, t_entity_id entity_id, t_c *added_component, void
 {
 	t_archetype	**old_entity_archetype_ptr;
 	t_archetype	*found_archetype;
+	t_archetype	*new_archetype;
 
 	old_entity_archetype_ptr = vector_get(ecs->entity_id_archetype_pairs, entity_id);
 	_update_new_entity_archetype(*old_entity_archetype_ptr, added_component, ecs);
-	(void)value;
 
-	// Checks whether new_entity_archetype.c and .g are already in ecs.archetypes
+	// If the combination of new_entity_archetype.c and .g
+	// isn't found in ecs.archetypes, a new archetype gets created.
 	found_archetype = _find_archetype(ecs->new_entity_archetype, ecs->archetypes, ecs->t_c_size, ecs->t_g_size);
 	if (found_archetype == NULL)
 	{
-	// 	new_archetype = calloc();
-	// 	ft_memcpy(new_archetype, ecs->new_entity_archetype, );
-	// 	ecs->archetypes vector_push() new_archetype
-	// 	ecs->entity_id_archetype_pairs[entity_id] = new_archetype
-	//  use value
+		new_archetype = vector_grow(ecs->archetypes);
+		new_archetype->c = ecs->new_entity_archetype->c;
+		new_archetype->g = ecs->new_entity_archetype->g;
+		*old_entity_archetype_ptr = new_archetype;
+
+		// TODO: Use "value"!
+		(void)value;
 	}
 	else
 	{
@@ -235,17 +233,9 @@ void	ecs_component(t_ecs *ecs, t_entity_id entity_id, t_c *added_component, void
 
 void	ecs_cleanup(t_ecs *ecs)
 {
-	t_archetype	*archetype;
-
 	free(ecs->component_sizes);
 	vector_free(ecs->entity_id_archetype_pairs);
-	// TODO: Loop over all archetypes to free them all!
-	archetype = vector_get(ecs->archetypes, 0);
-	free(archetype->c);
-	free(archetype->g);
 	vector_free(ecs->archetypes);
-	free(ecs->new_entity_archetype->c);
-	free(ecs->new_entity_archetype->g);
 	free(ecs->new_entity_archetype);
 	free(ecs);
 }

@@ -1,7 +1,5 @@
-#define ECS_IMPLEMENTATION
-#include "ecs.h"
-
 // #include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 // Components
@@ -19,6 +17,9 @@ struct	s_g
 {
 	bool	player;
 };
+
+#define ECS_IMPLEMENTATION
+#include "ecs.h"
 
 // void	foo(t_ecs *ecs);
 
