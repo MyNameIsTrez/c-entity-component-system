@@ -7,32 +7,32 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct s_ecs	t_ecs;
+typedef struct s_ecs		t_ecs;
 // Entity IDs allow associating components with one another
-typedef uint32_t		t_entity_id;
-typedef struct s_query	t_query;
-typedef struct s_c		t_c;
-typedef struct s_g		t_g;
+typedef uint32_t			t_entity_id;
+typedef struct s_iterator	t_iterator;
+typedef struct s_c			t_c;
+typedef struct s_g			t_g;
 
 t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size);
 
 // Declares what the sizes of components and the size of t_c are
-void	ecs_size(t_c *sizes, t_ecs *ecs);
+void	ecs_size(t_ecs *ecs, t_c *sizes);
 
 // Creates an entity
 t_entity_id	ecs_entity(t_ecs *ecs);
 
-void	ecs_component(t_entity_id entity_id, t_c *added_component, void *value, t_ecs *ecs);
+void	ecs_component(t_ecs *ecs, t_entity_id entity_id, t_c *added_component, void *value);
 
-void	ecs_tag(t_entity_id entity_id, t_g *added_tags, t_ecs *ecs);
+void	ecs_tag(t_ecs *ecs, t_entity_id entity_id, t_g *added_tags);
 
-t_query	*ecs_query(t_c *components, t_g *tags, t_ecs *ecs);
+t_iterator	*ecs_query(t_ecs *ecs, t_c *components, t_g *tags);
 
-// Increments query.entity_index for ecs_get()
-bool	ecs_iterate(t_query *query);
+// Increments iterator->entity_index for ecs_get()
+bool	ecs_iterate(t_iterator *iterator);
 
-// Returns a pointer to data + query.entity_index * block_size + component offset
-void	*ecs_get(t_c *component, t_query *query);
+// Returns a pointer to data + iterator->entity_index * block_size + component offset
+void	*ecs_get(t_c *component, t_iterator *iterator);
 
 void	ecs_cleanup(t_ecs *ecs);
 
@@ -47,7 +47,10 @@ void	ecs_remove(t_entity_id entity_id, t_c *component, t_ecs *ecs);
 void	ecs_destroy(t_entity_id entity_id, t_ecs *ecs);
 */
 
+#endif // ECS_H
+
 # ifdef ECS_IMPLEMENTATION
+# define ECS_IMPLEMENTATION
 
 # define VECTOR_IMPLEMENTATION
 # include "vector.h"
@@ -65,18 +68,20 @@ struct s_ecs
 	size_t		t_g_size;
 	t_c			*component_sizes;
 	t_entity_id	next_highest_entity_id;
-	t_vector	*entity_id_archetype_pairs; // t_archetype **
-	t_vector	*archetypes; // t_archetype	*, is a Set
+	// t_archetype **
+	t_vector	*entity_id_archetype_pairs;
+	// t_archetype	*, is a Set
+	t_vector	*archetypes;
 	t_archetype	*new_entity_archetype;
-	void		**archetypes_data; // A vector where each index corresponds with an index in the archetypes field, and the value is a pointer to archetype data
+	// A vector where each index corresponds with an index in the archetypes field, and the value is a pointer to archetype data
+	void		**archetypes_data;
 };
 
-// TODO: Typedef to t_iterator?
-typedef struct s_query
+struct s_iterator
 {
 	uint8_t	*data;
 	size_t	entity_index;
-}	t_query;
+};
 
 t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 {
@@ -92,7 +97,7 @@ t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 	ecs->entity_id_archetype_pairs = vector_new(sizeof(t_archetype *));
 
 	ecs->archetypes = vector_new(sizeof(t_archetype));
-	vector_push(ecs->archetypes);
+	vector_grow(ecs->archetypes);
 	((t_archetype *)vector_get(ecs->archetypes, 0))->c = calloc(1, t_c_size);
 	((t_archetype *)vector_get(ecs->archetypes, 0))->g = calloc(1, t_g_size);
 
@@ -103,7 +108,7 @@ t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 	return (ecs);
 }
 
-void    ecs_size(t_c *sizes, t_ecs *ecs)
+void    ecs_size(t_ecs *ecs, t_c *sizes)
 {
 	size_t  field_index;
 	size_t  field_value;
@@ -119,41 +124,43 @@ void    ecs_size(t_c *sizes, t_ecs *ecs)
 
 t_entity_id	ecs_entity(t_ecs *ecs)
 {
-	t_archetype *empty_archetype;
+	// t_archetype *empty_archetype;
 
-	empty_archetype = vector_get(ecs->archetypes, 0);
-	// TODO: Let ecs contain a vector of entity IDs that have been removed and let this function use those first before incrementing ecs.next_highest_entity_id
-	(void)empty_archetype;
-	// ft_vector_push(&ecs->entity_id_archetype_pairs, &empty_archetype);
+	// empty_archetype = vector_get(ecs->archetypes, 0);
+	vector_grow(ecs->entity_id_archetype_pairs);
+	// TODO: put empty_archetype in new spot?
 	return (ecs->next_highest_entity_id++);
 }
 
-static void	_update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)
-{
-	size_t  field_index;
-	size_t  field_value;
+// static void	_update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)
+// {
+// 	size_t  field_index;
+// 	size_t  field_value;
 
-	memcpy(ecs->new_entity_archetype->c, old_entity_archetype->c, ecs->t_c_size);
-	memcpy(ecs->new_entity_archetype->g, old_entity_archetype->g, ecs->t_c_size);
+// 	memcpy(ecs->new_entity_archetype->c, old_entity_archetype->c, ecs->t_c_size);
+// 	memcpy(ecs->new_entity_archetype->g, old_entity_archetype->g, ecs->t_c_size);
 
-	field_index = 0;
-	while (field_index < ecs->t_c_count)
-	{
-		field_value = ((size_t *)added_component)[field_index];
-		if (field_value == 1)
-		{
-			((size_t *)ecs->new_entity_archetype->c)[field_index] = field_value;
-		}
-		field_index++;
-	}
-}
+// 	field_index = 0;
+// 	while (field_index < ecs->t_c_count)
+// 	{
+// 		field_value = ((size_t *)added_component)[field_index];
+// 		if (field_value == 1)
+// 		{
+// 			((size_t *)ecs->new_entity_archetype->c)[field_index] = field_value;
+// 		}
+// 		field_index++;
+// 	}
+// }
 
-void	ecs_component(t_entity_id entity_id, t_c *added_component, void *value, t_ecs *ecs)
+void	ecs_component(t_ecs *ecs, t_entity_id entity_id, t_c *added_component, void *value)
 {
 	t_archetype	*old_entity_archetype;
 
 	old_entity_archetype = vector_get(ecs->entity_id_archetype_pairs, entity_id);
-	_update_new_entity_archetype(old_entity_archetype, added_component, ecs);
+	(void)old_entity_archetype;
+	(void)added_component;
+	(void)value;
+	// _update_new_entity_archetype(old_entity_archetype, added_component, ecs);
 
 	// Checks whether new_entity_archetype.c and .g are already in ecs.archetypes
 	// if (ecs->new_entity_archetype in ecs->archetypes)
@@ -163,8 +170,6 @@ void	ecs_component(t_entity_id entity_id, t_c *added_component, void *value, t_e
 	// 	ft_memcpy(new_archetype, ecs->new_entity_archetype, );
 	// 	ecs->archetypes vector_push_back() new_archetype
 	// 	ecs->entity_id_archetype_pairs[entity_id] = new_archetype
-
-	(void)value;
 }
 
 void	ecs_cleanup(t_ecs *ecs)
@@ -181,5 +186,3 @@ void	ecs_cleanup(t_ecs *ecs)
 }
 
 # endif // ECS_IMPLEMENTATION
-
-#endif // ECS_H
