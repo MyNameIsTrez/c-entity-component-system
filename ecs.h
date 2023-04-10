@@ -8,40 +8,11 @@
 #include <string.h>
 
 typedef struct s_ecs	t_ecs;
-
 // Entity IDs allow associating components with one another
-typedef uint32_t	t_entity_id;
-
+typedef uint32_t		t_entity_id;
 typedef struct s_query	t_query;
-
-typedef struct s_c	t_c;
-typedef struct s_g	t_g;
-
-typedef	struct s_archetype
-{
-	t_c	*c;
-	t_g	*g;
-}	t_archetype;
-
-typedef struct s_ecs
-{
-	size_t		t_c_size;
-	size_t		t_c_count;
-	size_t		t_g_size;
-	t_c			*component_sizes;
-	t_entity_id	next_highest_entity_id;
-	t_archetype	**entity_id_archetype_pairs;
-	t_archetype	*archetypes; // Is a Set data type
-	t_archetype	*new_entity_archetype;
-	void		**archetypes_data; // A vector where each index corresponds with an index in the archetypes field, and the value is a pointer to archetype data
-}	t_ecs;
-
-// TODO: Typedef to t_iterator?
-typedef struct s_query
-{
-	uint8_t	*data;
-	size_t	entity_index;
-}	t_query;
+typedef struct s_c		t_c;
+typedef struct s_g		t_g;
 
 t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size);
 
@@ -63,6 +34,8 @@ bool	ecs_iterate(t_query *query);
 // Returns a pointer to data + query.entity_index * block_size + component offset
 void	*ecs_get(t_c *component, t_query *query);
 
+void	ecs_cleanup(t_ecs *ecs);
+
 /*
 // This can't be used for writing to components since the data is duplicated
 // Example:
@@ -73,6 +46,37 @@ void	ecs_remove(t_entity_id entity_id, t_c *component, t_ecs *ecs);
 
 void	ecs_destroy(t_entity_id entity_id, t_ecs *ecs);
 */
+
+# ifdef ECS_IMPLEMENTATION
+
+# define VECTOR_IMPLEMENTATION
+# include "vector.h"
+
+typedef	struct s_archetype
+{
+	t_c	*c;
+	t_g	*g;
+}	t_archetype;
+
+struct s_ecs
+{
+	size_t		t_c_size;
+	size_t		t_c_count;
+	size_t		t_g_size;
+	t_c			*component_sizes;
+	t_entity_id	next_highest_entity_id;
+	t_vector	*entity_id_archetype_pairs; // t_archetype **
+	t_vector	*archetypes; // t_archetype	*, is a Set
+	t_archetype	*new_entity_archetype;
+	void		**archetypes_data; // A vector where each index corresponds with an index in the archetypes field, and the value is a pointer to archetype data
+};
+
+// TODO: Typedef to t_iterator?
+typedef struct s_query
+{
+	uint8_t	*data;
+	size_t	entity_index;
+}	t_query;
 
 t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 {
@@ -85,11 +89,12 @@ t_ecs   *ecs_init(size_t t_c_size, size_t t_g_size)
 	ecs->t_g_size = t_g_size;
 
 	ecs->component_sizes = calloc(1, t_c_size);
-	// ecs->entity_id_archetype_pairs = ft_vector_new(sizeof(t_archetype *));
+	ecs->entity_id_archetype_pairs = vector_new(sizeof(t_archetype *));
 
-	// ecs->archetypes = ft_vector_new_reserved(sizeof(t_archetype), 1);
-	ecs->archetypes[0].c = calloc(1, t_c_size);
-	ecs->archetypes[0].g = calloc(1, t_g_size);
+	ecs->archetypes = vector_new(sizeof(t_archetype));
+	vector_push(ecs->archetypes);
+	((t_archetype *)vector_get(ecs->archetypes, 0))->c = calloc(1, t_c_size);
+	((t_archetype *)vector_get(ecs->archetypes, 0))->g = calloc(1, t_g_size);
 
     ecs->new_entity_archetype = calloc(1, sizeof(t_archetype));
     ecs->new_entity_archetype->c = calloc(1, ecs->t_c_size);
@@ -116,14 +121,14 @@ t_entity_id	ecs_entity(t_ecs *ecs)
 {
 	t_archetype *empty_archetype;
 
-	empty_archetype = &ecs->archetypes[0];
+	empty_archetype = vector_get(ecs->archetypes, 0);
 	// TODO: Let ecs contain a vector of entity IDs that have been removed and let this function use those first before incrementing ecs.next_highest_entity_id
 	(void)empty_archetype;
 	// ft_vector_push(&ecs->entity_id_archetype_pairs, &empty_archetype);
 	return (ecs->next_highest_entity_id++);
 }
 
-static void	update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)
+static void	_update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *added_component, t_ecs *ecs)
 {
 	size_t  field_index;
 	size_t  field_value;
@@ -136,7 +141,9 @@ static void	update_new_entity_archetype(t_archetype *old_entity_archetype, t_c *
 	{
 		field_value = ((size_t *)added_component)[field_index];
 		if (field_value == 1)
+		{
 			((size_t *)ecs->new_entity_archetype->c)[field_index] = field_value;
+		}
 		field_index++;
 	}
 }
@@ -145,8 +152,8 @@ void	ecs_component(t_entity_id entity_id, t_c *added_component, void *value, t_e
 {
 	t_archetype	*old_entity_archetype;
 
-	old_entity_archetype = ecs->entity_id_archetype_pairs[entity_id];
-	update_new_entity_archetype(old_entity_archetype, added_component, ecs);
+	old_entity_archetype = vector_get(ecs->entity_id_archetype_pairs, entity_id);
+	_update_new_entity_archetype(old_entity_archetype, added_component, ecs);
 
 	// Checks whether new_entity_archetype.c and .g are already in ecs.archetypes
 	// if (ecs->new_entity_archetype in ecs->archetypes)
@@ -160,4 +167,19 @@ void	ecs_component(t_entity_id entity_id, t_c *added_component, void *value, t_e
 	(void)value;
 }
 
-#endif
+void	ecs_cleanup(t_ecs *ecs)
+{
+	free(ecs->component_sizes);
+	vector_free(ecs->entity_id_archetype_pairs);
+	free(((t_archetype *)vector_get(ecs->archetypes, 0))->c);
+	free(((t_archetype *)vector_get(ecs->archetypes, 0))->g);
+	vector_free(ecs->archetypes);
+	free(ecs->new_entity_archetype->c);
+	free(ecs->new_entity_archetype->g);
+	free(ecs->new_entity_archetype);
+	free(ecs);
+}
+
+# endif // ECS_IMPLEMENTATION
+
+#endif // ECS_H

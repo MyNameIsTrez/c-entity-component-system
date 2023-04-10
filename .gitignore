@@ -1,8 +1,10 @@
 *
 !*/
+!.vscode/launch.json
+!.vscode/tasks.json
+!.gitignore
 !ecs.h
 !example.c
 !Makefile
-!.gitignore
-!.vscode/launch.json
-!.vscode/tasks.json
+!README.md
+!vector.h

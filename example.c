@@ -1,28 +1,33 @@
+#define ECS_IMPLEMENTATION
 #include "ecs.h"
-#include "assert.h"
 
+// #include <assert.h>
 #include <stdlib.h>
 
-typedef struct	s_c
+struct	s_c
 {
 	size_t	x;
-}	t_c; // Components
+}; // Components
 
-typedef struct	s_g
+struct	s_g
 {
 	bool	player;
-}	t_g; // Tags (_t is reserved)
+}; // Tags (_t is reserved)
 
 // void	foo(t_ecs *ecs);
 
 int	main(void)
 {
-	// t_ecs		*ecs;
+	t_ecs		*ecs;
 	// t_entity_id	monster_id;
-	// // t_entity_id	player_id;
-	// int			x;
+	// t_entity_id	player_id;
+	int			x;
 
-	// ecs = ecs_init(sizeof(t_c), sizeof(t_g));
+	x = 3;
+	(void)x;
+
+	ecs = ecs_init(sizeof(t_c), sizeof(t_g));
+	(void)ecs;
 
 	// ecs_size(&(t_c){.x=sizeof(int)}, ecs);
 
@@ -36,6 +41,8 @@ int	main(void)
 	// // ecs_tag(player_id, &(t_g){.player=1}, ecs);
 
 	// // foo(ecs);
+
+	ecs_cleanup(ecs);
 
 	return (EXIT_SUCCESS);
 }

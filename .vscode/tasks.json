@@ -5,7 +5,7 @@
 			"label": "Build example",
 			"type": "shell",
 			"command": "make",
-			"args": [ "example", "DEBUG=1", "SAN=", "O3=" ],
+			"args": [ "example", "DEBUG=1", "ASAN=1", "O3=" ],
 			"problemMatcher": [ "$gcc" ],
 			"group": "build"
 		}
