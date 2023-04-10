@@ -1,9 +1,8 @@
 *
-
 !*/
-
-!*.[ch]
-
+!ecs.h
+!example.c
 !Makefile
-
 !.gitignore
+!.vscode/launch.json
+!.vscode/tasks.json

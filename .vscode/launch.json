@@ -1,0 +1,13 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+	{
+		"name": "example",
+		"type": "cppdbg",
+		"request": "launch",
+		"program": "${workspaceFolder}/example",
+		"cwd": "${workspaceFolder}",
+		"preLaunchTask": "Build example",
+		"internalConsoleOptions": "neverOpen"
+	}]
+}

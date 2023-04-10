@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build example",
+			"type": "shell",
+			"command": "make",
+			"args": [ "example", "DEBUG=1", "SAN=", "O3=" ],
+			"problemMatcher": [ "$gcc" ],
+			"group": "build"
+		}
+	]
+}
