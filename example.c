@@ -4,7 +4,7 @@
 
 // Components
 // The sizes of components in bytes are stored here.
-// x is an int and sizeof(int) == 32, so this s_c.x size_t will hold 32.
+// x is an int and sizeof(int) == 4, so s_c.x will be 4.
 struct	s_c
 {
 	size_t	x;
